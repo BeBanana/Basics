@@ -1,17 +1,110 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+}
+
 plugins {
+    id "com.jfrog.bintray" version "1.7.3"
+    id "maven-publish"
     id 'java'
 }
 
 group 'eu.bebanana'
-version '1.0-SNAPSHOT'
+version '1.0.0'
 
 sourceCompatibility = 1.8
 
 repositories {
+    mavenLocal()
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
     compile "com.sparkjava:spark-core:2.7.2"
     compile 'org.apache.httpcomponents:httpclient:4.5'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+javadoc.failOnError = false
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+def pomConfig = {
+    licenses {
+        license {
+            name "MIT License"
+            url "https://github.com/BeBanana/Basics/blob/master/LICENSE"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "xbauquet"
+            name "Xavier Bauquet"
+            email "xavier@bebanana.eu"
+        }
+    }
+
+    scm {
+        url "https://github.com/BeBanana/Basics"
+    }
+}
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+            groupId 'eu.bebanana'
+            artifactId 'Basics'
+            version '1.0.0'
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'Basics')
+                root.appendNode('name', 'Basics')
+                root.appendNode('url', 'https://github.com/BeBanana/Basics')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.getProperty('bintray.user')
+    key = System.getProperty('bintray.key')
+    publications = ['mavenPublication']
+
+    pkg {
+        repo = 'Java'
+        name = 'Basics'
+        userOrg = 'bebanana'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/BeBanana/Basics.git'
+        version {
+            name = '1.0.0'
+            desc = '1.0.0'
+            released  = new Date()
+        }
+    }
+
 }
