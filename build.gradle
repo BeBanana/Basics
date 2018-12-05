@@ -12,8 +12,12 @@ plugins {
     id 'java'
 }
 
+
+def libVersion = '1.0.1'
+
+
 group 'eu.bebanana'
-version '1.0.0'
+version libVersion
 
 sourceCompatibility = 1.8
 
@@ -77,7 +81,7 @@ publishing {
             }
             groupId 'eu.bebanana'
             artifactId 'Basics'
-            version '1.0.0'
+            version libVersion
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', 'Basics')
@@ -101,8 +105,8 @@ bintray {
         licenses = ['MIT']
         vcsUrl = 'https://github.com/BeBanana/Basics.git'
         version {
-            name = '1.0.0'
-            desc = '1.0.0'
+            name = libVersion
+            desc = libVersion
             released  = new Date()
         }
     }
